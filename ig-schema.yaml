@@ -1,0 +1,166 @@
+$schema: http://www.example.org/IG
+definitions:
+  LogicalOperator:
+    type: string
+    enum:
+      - AND
+      - OR
+      - XOR
+
+  Document:
+    type: object
+    properties:
+      content: { type: string }
+      statements:
+        type: array
+        items: { $ref: '#/definitions/InstitutionalStatement' }
+  
+  # Abstract type entailing:
+  #  - RegulativeInstitutionalStatement
+  #  - ConstitutiveInstitutionalStatement
+  #  - InstitutionalStatementCombination
+  AbstractInstitutionalStatement:
+    type: object
+    allOf:
+      - $ref: '#/definitions/Node'
+    properties:  
+      inversion: { type: boolean }
+      orElse: { $ref: '#/definitions/InstitutionalStatement' }
+    required:
+      - inversion
+
+  # Any type of institutional statement
+  InstitutionalStatement:
+    oneOf:
+      - $ref: '#/definitions/RegulativeInstitutionalStatement'
+      - $ref: '#/definitions/ConstitutiveInstitutionalStatement'
+      - $ref: '#/definitions/InstitutionalStatementCombination'
+
+  RegulativeInstitutionalStatement:
+    allOf:
+      - $ref: '#/definitions/AbstractInstitutionalStatement'
+    properties:
+      attributes: { $ref: '#/definitions/StatementOrNodeWithProperties' }
+      directObject: { $ref: '#/definitions/StatementOrNodeWithProperties' }
+      indirectObject: { $ref: '#/definitions/StatementOrNodeWithProperties' }
+      deontic: { $ref: '#/definitions/Node' }
+      aim: { $ref: '#/definitions/Node' }
+      activationCondition: { $ref: '#/definitions/ConditionOrConstraint' }
+      executionConstraint: { $ref: '#/definitions/ConditionOrConstraint' }
+    required:
+      - attributes
+      - aim
+
+  ConstitutiveInstitutionalStatement:
+    allOf:
+      - $ref: '#/definitions/AbstractInstitutionalStatement'
+    properties:
+      constitutedEntity: { $ref: '#/definitions/StatementOrNodeWithProperties' }
+      deontic: { $ref: '#/definitions/Node' }
+      constitutiveFunction: { $ref: '#/definitions/Node' }
+      constitutingProperties: { $ref: '#/definitions/StatementOrNodeWithProperties' }
+      activationCondition: { $ref: '#/definitions/ConditionOrConstraint' }
+      executionConstraint: { $ref: '#/definitions/ConditionOrConstraint' }
+    required:
+      - constitutedEntity
+      - constitutiveFunction
+  
+  InstitutionalStatementCombination:
+    allOf:
+      - $ref: '#/definitions/AbstractInstitutionalStatement'
+    properties:
+      leftInstitutionalStatement: { $ref: '#/definitions/InstitutionalStatement' }
+      logicalOperator: { $ref: '#/definitions/LogicalOperator' }
+      rightInstitutionalStatement: { $ref: '#/definitions/InstitutionalStatement' }
+
+  Node:
+    type: object
+    properties:
+      value: { type: string }
+      begin: { type: integer }
+      length: { type: integer }
+    
+    # These are required for files exchanged between tools
+    # For user display, these properties may be omitted if they repeat themselves in parent nodes
+    required:
+      - value
+      - begin
+      - length
+
+
+  # Type for both activation conditions and execution constraints
+  ConditionOrConstraint:
+    oneOf:
+      - type: array
+        items: { $ref: '#/definitions/Node' }
+      - $ref: '#/definitions/InstitutionalStatement'
+    
+
+  # An attribute can be either a nested statement or an attribute with properties
+  # Attribute:
+  #   oneOf:
+  #     - $ref: '#/definitions/InstitutionalStatement'
+  #     - type: object
+  #       properties:
+  #         attribute: { $ref: '#/definitions/Node' }
+  #         properties:
+  #           type: array
+  #           items: { $ref: '#/definitions/Property' }
+  #         required:
+  #           - attribute
+
+
+  # Object:
+  #   oneOf:
+  #     - $ref: '#/definitions/InstitutionalStatement'
+  #     - type: object
+  #       properties:
+  #         object: { $ref: '#/definitions/Node' }
+  #         properties:
+  #           type: array
+  #           items: { $ref: '#/definitions/Property' }
+  #         required:
+  #           - object
+
+
+  # TODO: it doesn't capture AND/OR/XOR horizontal nesting
+  # see: page 22 of spec, () Statement
+
+  # Can be either a nested statement or a node with attached properties. Represents:
+  #   - Attribute
+  #   - Object
+  #   - ConstitutedEntity
+  #   - Property
+  StatementOrNodeWithProperties:
+    oneOf:
+      - $ref: '#/definitions/InstitutionalStatement'
+      - type: object
+        properties:
+          value: { $ref: '#/definitions/Node' }
+          props:
+            type: array
+            items: { $ref: '#/definitions/StatementOrNodeWithProperties' }
+          required:
+            - value
+  
+
+type: object
+properties:
+  document: { $ref: '#/definitions/Document' }
+
+
+
+---
+constitutingProperties:
+  value: (jakiś node)
+  props: [ ... ]
+
+---
+constitutingProperties:
+  (jakiś statement)
+
+---
+directObject:
+  value: 'cośtam'
+  props: [ ... ]
+
