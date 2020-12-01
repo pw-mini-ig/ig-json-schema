@@ -14,6 +14,7 @@ definitions:
       statements:
         type: array
         items: { $ref: '#/definitions/InstitutionalStatement' }
+    additionalProperties: false
   
   # Abstract type entailing:
   #  - RegulativeInstitutionalStatement
@@ -50,6 +51,7 @@ definitions:
     required:
       - attributes
       - aim
+    additionalProperties: false
 
   ConstitutiveInstitutionalStatement:
     allOf:
@@ -64,6 +66,7 @@ definitions:
     required:
       - constitutedEntity
       - constitutiveFunction
+    additionalProperties: false
   
   InstitutionalStatementCombination:
     allOf:
@@ -72,6 +75,7 @@ definitions:
       leftInstitutionalStatement: { $ref: '#/definitions/InstitutionalStatement' }
       logicalOperator: { $ref: '#/definitions/LogicalOperator' }
       rightInstitutionalStatement: { $ref: '#/definitions/InstitutionalStatement' }
+    additionalProperties: false
 
   Node:
     type: object
@@ -140,27 +144,14 @@ definitions:
           props:
             type: array
             items: { $ref: '#/definitions/StatementOrNodeWithProperties' }
-          required:
-            - value
+        required:
+          - value
+        additionalProperties: false
   
 
 type: object
 properties:
   document: { $ref: '#/definitions/Document' }
+additionalProperties: false
 
-
-
----
-constitutingProperties:
-  value: (jakiś node)
-  props: [ ... ]
-
----
-constitutingProperties:
-  (jakiś statement)
-
----
-directObject:
-  value: 'cośtam'
-  props: [ ... ]
 
