@@ -1,0 +1,210 @@
+{
+  "$schema": "http://www.example.org/IG",
+  "definitions": {
+    "LogicalOperator": {
+      "type": "string",
+      "enum": [
+        "AND",
+        "OR",
+        "XOR"
+      ]
+    },
+    "Document": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InstitutionalStatement"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "AbstractInstitutionalStatement": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Node"
+        }
+      ],
+      "properties": {
+        "inversion": {
+          "type": "boolean"
+        },
+        "orElse": {
+          "$ref": "#/definitions/InstitutionalStatement"
+        }
+      },
+      "required": [
+        "inversion"
+      ]
+    },
+    "InstitutionalStatement": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/RegulativeInstitutionalStatement"
+        },
+        {
+          "$ref": "#/definitions/ConstitutiveInstitutionalStatement"
+        },
+        {
+          "$ref": "#/definitions/InstitutionalStatementCombination"
+        }
+      ]
+    },
+    "RegulativeInstitutionalStatement": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbstractInstitutionalStatement"
+        }
+      ],
+      "properties": {
+        "attributes": {
+          "$ref": "#/definitions/StatementOrNodeWithProperties"
+        },
+        "directObject": {
+          "$ref": "#/definitions/StatementOrNodeWithProperties"
+        },
+        "indirectObject": {
+          "$ref": "#/definitions/StatementOrNodeWithProperties"
+        },
+        "deontic": {
+          "$ref": "#/definitions/Node"
+        },
+        "aim": {
+          "$ref": "#/definitions/Node"
+        },
+        "activationCondition": {
+          "$ref": "#/definitions/ConditionOrConstraint"
+        },
+        "executionConstraint": {
+          "$ref": "#/definitions/ConditionOrConstraint"
+        }
+      },
+      "required": [
+        "attributes",
+        "aim"
+      ],
+      "additionalProperties": false
+    },
+    "ConstitutiveInstitutionalStatement": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbstractInstitutionalStatement"
+        }
+      ],
+      "properties": {
+        "constitutedEntity": {
+          "$ref": "#/definitions/StatementOrNodeWithProperties"
+        },
+        "deontic": {
+          "$ref": "#/definitions/Node"
+        },
+        "constitutiveFunction": {
+          "$ref": "#/definitions/Node"
+        },
+        "constitutingProperties": {
+          "$ref": "#/definitions/StatementOrNodeWithProperties"
+        },
+        "activationCondition": {
+          "$ref": "#/definitions/ConditionOrConstraint"
+        },
+        "executionConstraint": {
+          "$ref": "#/definitions/ConditionOrConstraint"
+        }
+      },
+      "required": [
+        "constitutedEntity",
+        "constitutiveFunction"
+      ],
+      "additionalProperties": false
+    },
+    "InstitutionalStatementCombination": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbstractInstitutionalStatement"
+        }
+      ],
+      "properties": {
+        "leftInstitutionalStatement": {
+          "$ref": "#/definitions/InstitutionalStatement"
+        },
+        "logicalOperator": {
+          "$ref": "#/definitions/LogicalOperator"
+        },
+        "rightInstitutionalStatement": {
+          "$ref": "#/definitions/InstitutionalStatement"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Node": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "begin": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "value",
+        "begin",
+        "length"
+      ]
+    },
+    "ConditionOrConstraint": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Node"
+          }
+        },
+        {
+          "$ref": "#/definitions/InstitutionalStatement"
+        }
+      ]
+    },
+    "StatementOrNodeWithProperties": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/InstitutionalStatement"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/Node"
+            },
+            "props": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/StatementOrNodeWithProperties"
+              }
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "document": {
+      "$ref": "#/definitions/Document"
+    }
+  },
+  "additionalProperties": false
+}
