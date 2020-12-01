@@ -1,0 +1,22 @@
+# Empty document
+
+---
+# Document with just text, no nodes
+content: Test content.
+
+---
+content: test testAim
+statements:
+  - value: test testAim
+    begin: 0
+    length: 12
+    inversion: false
+    attributes: 
+      value: 
+        value: test
+        begin: 0
+        length: 4
+    aim:
+      value: testAim
+      begin: 5
+      length: 7

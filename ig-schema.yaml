@@ -1,3 +1,4 @@
+# TODO: Add title, description, etc.
 $schema: http://www.example.org/IG
 definitions:
   LogicalOperator:
@@ -7,19 +8,29 @@ definitions:
       - OR
       - XOR
 
-  Document:
+  # An abstract node in the IG tree        
+  Node:
     type: object
     properties:
-      content: { type: string }
-      statements:
-        type: array
-        items: { $ref: '#/definitions/InstitutionalStatement' }
-    additionalProperties: false
-  
+      value: { type: string }
+      begin: { type: integer }
+      length: { type: integer }
+
+    # These are required for files exchanged between tools
+    # For user display, these properties may be omitted if they repeat themselves in parent nodes
+    # TODO: can we make this 'requiredness' depend on some switch at root level?
+    required:
+      - value
+      - begin
+      - length
+
   # Abstract type entailing:
   #  - RegulativeInstitutionalStatement
   #  - ConstitutiveInstitutionalStatement
   #  - InstitutionalStatementCombination
+  #
+  # TODO: Investigate whether we need a 'statementType' field to capture information
+  #   about statements of fact.
   AbstractInstitutionalStatement:
     type: object
     allOf:
@@ -68,6 +79,7 @@ definitions:
       - constitutiveFunction
     additionalProperties: false
   
+  # TODO: Generalize this to one operator with N operands
   InstitutionalStatementCombination:
     allOf:
       - $ref: '#/definitions/AbstractInstitutionalStatement'
@@ -76,21 +88,6 @@ definitions:
       logicalOperator: { $ref: '#/definitions/LogicalOperator' }
       rightInstitutionalStatement: { $ref: '#/definitions/InstitutionalStatement' }
     additionalProperties: false
-
-  Node:
-    type: object
-    properties:
-      value: { type: string }
-      begin: { type: integer }
-      length: { type: integer }
-    
-    # These are required for files exchanged between tools
-    # For user display, these properties may be omitted if they repeat themselves in parent nodes
-    required:
-      - value
-      - begin
-      - length
-
 
   # Type for both activation conditions and execution constraints
   ConditionOrConstraint:
@@ -139,6 +136,7 @@ definitions:
     oneOf:
       - $ref: '#/definitions/InstitutionalStatement'
       - type: object
+        # TODO: property 'value' has itself property 'value', that is rather ugly
         properties:
           value: { $ref: '#/definitions/Node' }
           props:
@@ -149,9 +147,13 @@ definitions:
         additionalProperties: false
   
 
+# Root element
 type: object
 properties:
-  document: { $ref: '#/definitions/Document' }
+  content: { type: string }
+  statements:
+    type: array
+    items: { $ref: '#/definitions/InstitutionalStatement' }
 additionalProperties: false
 
 

@@ -9,20 +9,24 @@
         "XOR"
       ]
     },
-    "Document": {
+    "Node": {
       "type": "object",
       "properties": {
-        "content": {
+        "value": {
           "type": "string"
         },
-        "statements": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/InstitutionalStatement"
-          }
+        "begin": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
         }
       },
-      "additionalProperties": false
+      "required": [
+        "value",
+        "begin",
+        "length"
+      ]
     },
     "AbstractInstitutionalStatement": {
       "type": "object",
@@ -142,25 +146,6 @@
       },
       "additionalProperties": false
     },
-    "Node": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "type": "string"
-        },
-        "begin": {
-          "type": "integer"
-        },
-        "length": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "value",
-        "begin",
-        "length"
-      ]
-    },
     "ConditionOrConstraint": {
       "oneOf": [
         {
@@ -202,8 +187,14 @@
   },
   "type": "object",
   "properties": {
-    "document": {
-      "$ref": "#/definitions/Document"
+    "content": {
+      "type": "string"
+    },
+    "statements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/InstitutionalStatement"
+      }
     }
   },
   "additionalProperties": false
