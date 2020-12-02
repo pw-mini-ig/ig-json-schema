@@ -11,12 +11,88 @@ statements:
     begin: 0
     length: 12
     inversion: false
-    attributes: 
-      value: 
+    attribute:
+      element:
         value: test
         begin: 0
         length: 4
+      properties:
+        - element:
+            value: abc
+            begin: 1
+            length: 123
     aim:
       value: testAim
       begin: 5
       length: 7
+    
+    directObject: 
+      value: some substatement
+      begin: 123
+      length: 10
+      inversion: true
+      attribute:
+        element:
+          value: test
+          begin: 0
+          length: 4
+      aim:
+        value: testAim
+        begin: 5
+        length: 7
+        
+---
+content: >
+  The State requires employers to provide notification to employees of the availability of 
+  unemployment compensation at the time of separation from employment.
+statements:
+  - value: >
+      The State requires employers to provide notification to employees of the availability of 
+      unemployment compensation at the time of separation from employment.
+    begin: 0
+    length: 156
+    inversion: false
+    attribute: 
+      element: 
+        value: The State
+        begin: 0
+        length: 9
+    aim:
+      value: requires
+      begin: 10
+      length: 8
+    directObject: 
+      value: >
+        employers to provide notification to employees of the availability of 
+        unemployment compensation at the time of separation from employment.
+      begin: 19
+      length: 137
+      inversion: false
+      attribute: 
+        element: 
+          value: employers
+          begin: 19
+          length: 9
+      aim:
+        value: to provide
+        begin: 29
+        length: 10
+      directObject: 
+        element: 
+          value: notification
+          begin: 40
+          length: 12
+        properties:
+          - element:
+              value: of the availability of unemployment compensation
+              begin: 66
+              length: 48
+      indirectObject: 
+        element: 
+          value: to employees
+          begin: 53
+          length: 12
+      activationCondition:
+        value: at the time of separation from employment.
+        begin: 115
+        length: 41

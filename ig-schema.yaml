@@ -52,7 +52,7 @@ definitions:
     allOf:
       - $ref: '#/definitions/AbstractInstitutionalStatement'
     properties:
-      attributes: { $ref: '#/definitions/StatementOrNodeWithProperties' }
+      attribute: { $ref: '#/definitions/StatementOrNodeWithProperties' }
       directObject: { $ref: '#/definitions/StatementOrNodeWithProperties' }
       indirectObject: { $ref: '#/definitions/StatementOrNodeWithProperties' }
       deontic: { $ref: '#/definitions/Node' }
@@ -60,7 +60,7 @@ definitions:
       activationCondition: { $ref: '#/definitions/ConditionOrConstraint' }
       executionConstraint: { $ref: '#/definitions/ConditionOrConstraint' }
     required:
-      - attributes
+      - attribute
       - aim
     additionalProperties: false
 
@@ -79,49 +79,28 @@ definitions:
       - constitutiveFunction
     additionalProperties: false
   
-  # TODO: Generalize this to one operator with N operands
+  # Logical combination of statements
   InstitutionalStatementCombination:
     allOf:
       - $ref: '#/definitions/AbstractInstitutionalStatement'
     properties:
-      leftInstitutionalStatement: { $ref: '#/definitions/InstitutionalStatement' }
       logicalOperator: { $ref: '#/definitions/LogicalOperator' }
-      rightInstitutionalStatement: { $ref: '#/definitions/InstitutionalStatement' }
+      statements:
+        type: array
+        items: { $ref: '#/definitions/InstitutionalStatement' }
+        minItems: 2
     additionalProperties: false
 
+  # TODO: Confirm that only one Cac / Cex is possible within a statement
   # Type for both activation conditions and execution constraints
   ConditionOrConstraint:
+    type: object
     oneOf:
-      - type: array
-        items: { $ref: '#/definitions/Node' }
+#      - type: array
+#        items: { $ref: '#/definitions/Node' }
+#        minLength: 1
       - $ref: '#/definitions/InstitutionalStatement'
-    
-
-  # An attribute can be either a nested statement or an attribute with properties
-  # Attribute:
-  #   oneOf:
-  #     - $ref: '#/definitions/InstitutionalStatement'
-  #     - type: object
-  #       properties:
-  #         attribute: { $ref: '#/definitions/Node' }
-  #         properties:
-  #           type: array
-  #           items: { $ref: '#/definitions/Property' }
-  #         required:
-  #           - attribute
-
-
-  # Object:
-  #   oneOf:
-  #     - $ref: '#/definitions/InstitutionalStatement'
-  #     - type: object
-  #       properties:
-  #         object: { $ref: '#/definitions/Node' }
-  #         properties:
-  #           type: array
-  #           items: { $ref: '#/definitions/Property' }
-  #         required:
-  #           - object
+      - $ref: '#/definitions/Node'
 
 
   # TODO: it doesn't capture AND/OR/XOR horizontal nesting
@@ -133,18 +112,19 @@ definitions:
   #   - ConstitutedEntity
   #   - Property
   StatementOrNodeWithProperties:
+    type: object
+    additionalProperties: false
     oneOf:
       - $ref: '#/definitions/InstitutionalStatement'
-      - type: object
-        # TODO: property 'value' has itself property 'value', that is rather ugly
-        properties:
-          value: { $ref: '#/definitions/Node' }
-          props:
+      # TODO: property 'value' has itself property 'value', that is rather ugly
+      - properties:
+          element: { $ref: '#/definitions/Node' }
+          properties:
             type: array
             items: { $ref: '#/definitions/StatementOrNodeWithProperties' }
         required:
-          - value
-        additionalProperties: false
+          - element
+        
   
 
 # Root element
@@ -157,3 +137,22 @@ properties:
 additionalProperties: false
 
 
+# %% Regulative Statement
+#	%(A) Attribute
+#		The State 
+#	%(I) Aim
+#		requires 
+#	%(Bdir)
+#	%%Regulative Statement
+#		%(A) Attribute
+#			employers 
+#		%(I) Aim
+#		to provide 
+#		%(Bdir)
+#			notification
+#		%(Bdir, prop)
+#			of the availability of unemployment compensation 
+#		%(Bind)
+#			to employees 
+#		%Activation Condition
+#			at the time of separation from employment.
