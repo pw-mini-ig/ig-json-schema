@@ -28,17 +28,20 @@ definitions:
   #  - RegulativeInstitutionalStatement
   #  - ConstitutiveInstitutionalStatement
   #  - InstitutionalStatementCombination
-  #
-  # TODO: Investigate whether we need a 'statementType' field to capture information
-  #   about statements of fact.
   AbstractInstitutionalStatement:
     type: object
     allOf:
       - $ref: '#/definitions/Node'
-    properties:  
+    properties:
+      type:
+        type: string
+        enum:
+          - institutionalStatement
+          - statementOfFact
       inversion: { type: boolean }
       orElse: { $ref: '#/definitions/InstitutionalStatement' }
     required:
+      - type
       - inversion
 
   # Any type of institutional statement
@@ -135,24 +138,3 @@ properties:
     type: array
     items: { $ref: '#/definitions/InstitutionalStatement' }
 additionalProperties: false
-
-
-# %% Regulative Statement
-#	%(A) Attribute
-#		The State 
-#	%(I) Aim
-#		requires 
-#	%(Bdir)
-#	%%Regulative Statement
-#		%(A) Attribute
-#			employers 
-#		%(I) Aim
-#		to provide 
-#		%(Bdir)
-#			notification
-#		%(Bdir, prop)
-#			of the availability of unemployment compensation 
-#		%(Bind)
-#			to employees 
-#		%Activation Condition
-#			at the time of separation from employment.

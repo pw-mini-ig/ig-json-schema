@@ -2,21 +2,23 @@ content: >
   The State requires employers to provide notification to employees of the availability of 
   unemployment compensation at the time of separation from employment.
 statements:
-  - value: >
+  - type: institutionalStatement
+    inversion: false
+    value: >
       The State requires employers to provide notification to employees of the availability of 
       unemployment compensation at the time of separation from employment.
-    inversion: false
-    attribute: 
-      element: 
+    attribute:
+      element:
         value: The State
     aim:
       value: requires
-    directObject: 
+    directObject:
+      type: institutionalStatement
       value: >
         employers to provide notification to employees of the availability of 
         unemployment compensation at the time of separation from employment.
       inversion: false
-      attribute: 
+      attribute:
         element: 
           value: employers
       aim:
@@ -27,8 +29,8 @@ statements:
         properties:
           - element:
               value: of the availability of unemployment compensation
-      indirectObject: 
-        element: 
+      indirectObject:
+        element:
           value: to employees
       activationCondition:
         value: at the time of separation from employment.

@@ -7,10 +7,11 @@ content: Test content.
 ---
 content: test testAim
 statements:
-  - value: test testAim
+  - type: institutionalStatement
+    inversion: false
+    value: test testAim
     begin: 0
     length: 12
-    inversion: false
     attribute:
       element:
         value: test
@@ -26,11 +27,12 @@ statements:
       begin: 5
       length: 7
     
-    directObject: 
+    directObject:
+      type: statementOfFact
+      inversion: true
       value: some substatement
       begin: 123
       length: 10
-      inversion: true
       attribute:
         element:
           value: test
@@ -46,12 +48,13 @@ content: >
   The State requires employers to provide notification to employees of the availability of 
   unemployment compensation at the time of separation from employment.
 statements:
-  - value: >
+  - type: institutionalStatement
+    inversion: false
+    value: >
       The State requires employers to provide notification to employees of the availability of 
       unemployment compensation at the time of separation from employment.
     begin: 0
     length: 156
-    inversion: false
     attribute: 
       element: 
         value: The State
@@ -61,13 +64,14 @@ statements:
       value: requires
       begin: 10
       length: 8
-    directObject: 
+    directObject:
+      type: institutionalStatement
+      inversion: false
       value: >
         employers to provide notification to employees of the availability of 
         unemployment compensation at the time of separation from employment.
       begin: 19
       length: 137
-      inversion: false
       attribute: 
         element: 
           value: employers
