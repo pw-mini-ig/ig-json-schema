@@ -1,6 +1,8 @@
 {
+  "title": "Institutional Grammar 2.0 JSON Schema",
+  "description": "IG 2.0 schema (https://arxiv.org/abs/2008.08937) designed by students from the Faculty of Mathematics and Information Science of the Warsaw University of Technology. This schema is still a prototype and subject to unannounced change.\n",
   "$schema": "http://www.example.org/IG",
-  "definitions": {
+  "$defs": {
     "LogicalOperator": {
       "type": "string",
       "enum": [
@@ -32,65 +34,73 @@
       "type": "object",
       "allOf": [
         {
-          "$ref": "#/definitions/Node"
+          "$ref": "#/$defs/Node"
         }
       ],
       "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "institutionalStatement",
+            "statementOfFact"
+          ]
+        },
         "inversion": {
           "type": "boolean"
         },
         "orElse": {
-          "$ref": "#/definitions/InstitutionalStatement"
+          "$ref": "#/$defs/InstitutionalStatement"
         }
       },
       "required": [
+        "type",
         "inversion"
       ]
     },
     "InstitutionalStatement": {
       "oneOf": [
         {
-          "$ref": "#/definitions/RegulativeInstitutionalStatement"
+          "$ref": "#/$defs/RegulativeInstitutionalStatement"
         },
         {
-          "$ref": "#/definitions/ConstitutiveInstitutionalStatement"
+          "$ref": "#/$defs/ConstitutiveInstitutionalStatement"
         },
         {
-          "$ref": "#/definitions/InstitutionalStatementCombination"
+          "$ref": "#/$defs/InstitutionalStatementCombination"
         }
       ]
     },
     "RegulativeInstitutionalStatement": {
       "allOf": [
         {
-          "$ref": "#/definitions/AbstractInstitutionalStatement"
+          "$ref": "#/$defs/AbstractInstitutionalStatement"
         }
       ],
       "properties": {
-        "attributes": {
-          "$ref": "#/definitions/StatementOrNodeWithProperties"
+        "attribute": {
+          "$ref": "#/$defs/ComponentWithProperties"
         },
         "directObject": {
-          "$ref": "#/definitions/StatementOrNodeWithProperties"
+          "$ref": "#/$defs/ComponentWithProperties"
         },
         "indirectObject": {
-          "$ref": "#/definitions/StatementOrNodeWithProperties"
+          "$ref": "#/$defs/ComponentWithProperties"
         },
         "deontic": {
-          "$ref": "#/definitions/Node"
+          "$ref": "#/$defs/ComponentWithoutProperties"
         },
         "aim": {
-          "$ref": "#/definitions/Node"
+          "$ref": "#/$defs/ComponentWithoutProperties"
         },
         "activationCondition": {
-          "$ref": "#/definitions/ConditionOrConstraint"
+          "$ref": "#/$defs/ComponentWithoutProperties"
         },
         "executionConstraint": {
-          "$ref": "#/definitions/ConditionOrConstraint"
+          "$ref": "#/$defs/ComponentWithoutProperties"
         }
       },
       "required": [
-        "attributes",
+        "attribute",
         "aim"
       ],
       "additionalProperties": false
@@ -98,27 +108,27 @@
     "ConstitutiveInstitutionalStatement": {
       "allOf": [
         {
-          "$ref": "#/definitions/AbstractInstitutionalStatement"
+          "$ref": "#/$defs/AbstractInstitutionalStatement"
         }
       ],
       "properties": {
         "constitutedEntity": {
-          "$ref": "#/definitions/StatementOrNodeWithProperties"
+          "$ref": "#/$defs/ComponentWithProperties"
         },
         "deontic": {
-          "$ref": "#/definitions/Node"
+          "$ref": "#/$defs/ComponentWithoutProperties"
         },
         "constitutiveFunction": {
-          "$ref": "#/definitions/Node"
+          "$ref": "#/$defs/ComponentWithoutProperties"
         },
         "constitutingProperties": {
-          "$ref": "#/definitions/StatementOrNodeWithProperties"
+          "$ref": "#/$defs/ComponentWithProperties"
         },
         "activationCondition": {
-          "$ref": "#/definitions/ConditionOrConstraint"
+          "$ref": "#/$defs/ComponentWithoutProperties"
         },
         "executionConstraint": {
-          "$ref": "#/definitions/ConditionOrConstraint"
+          "$ref": "#/$defs/ComponentWithoutProperties"
         }
       },
       "required": [
@@ -130,58 +140,107 @@
     "InstitutionalStatementCombination": {
       "allOf": [
         {
-          "$ref": "#/definitions/AbstractInstitutionalStatement"
+          "$ref": "#/$defs/AbstractInstitutionalStatement"
         }
       ],
       "properties": {
-        "leftInstitutionalStatement": {
-          "$ref": "#/definitions/InstitutionalStatement"
-        },
         "logicalOperator": {
-          "$ref": "#/definitions/LogicalOperator"
+          "$ref": "#/$defs/LogicalOperator"
         },
-        "rightInstitutionalStatement": {
-          "$ref": "#/definitions/InstitutionalStatement"
-        }
-      },
-      "additionalProperties": false
-    },
-    "ConditionOrConstraint": {
-      "oneOf": [
-        {
+        "statements": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Node"
-          }
+            "$ref": "#/$defs/InstitutionalStatement"
+          },
+          "minItems": 2
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "logicalOperator",
+        "statements"
+      ]
+    },
+    "ComponentWithoutProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Node"
         },
         {
-          "$ref": "#/definitions/InstitutionalStatement"
+          "$ref": "#/$defs/InstitutionalStatement"
+        },
+        {
+          "properties": {
+            "logicalOperator": {
+              "$ref": "#/$defs/LogicalOperator"
+            },
+            "components": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ComponentWithoutProperties"
+              },
+              "minItems": 2
+            }
+          },
+          "required": [
+            "logicalOperator",
+            "components"
+          ]
         }
       ]
     },
-    "StatementOrNodeWithProperties": {
+    "ComponentWithProperties": {
+      "type": "object",
+      "additionalProperties": false,
       "oneOf": [
         {
-          "$ref": "#/definitions/InstitutionalStatement"
+          "$ref": "#/$defs/Node"
         },
         {
-          "type": "object",
+          "$ref": "#/$defs/InstitutionalStatement"
+        },
+        {
+          "$ref": "#/$defs/ComponentWithPropertiesCombination"
+        },
+        {
           "properties": {
-            "value": {
-              "$ref": "#/definitions/Node"
+            "element": {
+              "$ref": "#/$defs/Node"
             },
-            "props": {
+            "properties": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/StatementOrNodeWithProperties"
+                "$ref": "#/$defs/ComponentWithProperties"
               }
             }
           },
           "required": [
-            "value"
-          ],
-          "additionalProperties": false
+            "element",
+            "properties"
+          ]
         }
+      ]
+    },
+    "ComponentWithPropertiesCombination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logicalOperator": {
+          "$ref": "#/$defs/LogicalOperator"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ComponentWithProperties"
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "logicalOperator",
+        "components"
       ]
     }
   },
@@ -193,7 +252,7 @@
     "statements": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/InstitutionalStatement"
+        "$ref": "#/$defs/InstitutionalStatement"
       }
     }
   },

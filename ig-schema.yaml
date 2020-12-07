@@ -1,6 +1,11 @@
-# TODO: Add title, description, etc.
+title: Institutional Grammar 2.0 JSON Schema
+description: >
+  IG 2.0 schema (https://arxiv.org/abs/2008.08937) designed by students from the Faculty of
+  Mathematics and Information Science of the Warsaw University of Technology.
+  This schema is still a prototype and subject to unannounced change.
 $schema: http://www.example.org/IG
-definitions:
+$defs:
+  # A logical operator with N operands
   LogicalOperator:
     type: string
     enum:
@@ -17,8 +22,7 @@ definitions:
       length: { type: integer }
 
     # These are required for files exchanged between tools
-    # For user display, these properties may be omitted if they repeat themselves in parent nodes
-    # TODO: can we make this 'requiredness' depend on some switch at root level?
+    # For user display, some of these properties may be omitted
     required:
       - value
       - begin
@@ -31,7 +35,7 @@ definitions:
   AbstractInstitutionalStatement:
     type: object
     allOf:
-      - $ref: '#/definitions/Node'
+      - $ref: '#/$defs/Node'
     properties:
       type:
         type: string
@@ -39,7 +43,7 @@ definitions:
           - institutionalStatement
           - statementOfFact
       inversion: { type: boolean }
-      orElse: { $ref: '#/definitions/InstitutionalStatement' }
+      orElse: { $ref: '#/$defs/InstitutionalStatement' }
     required:
       - type
       - inversion
@@ -47,21 +51,21 @@ definitions:
   # Any type of institutional statement
   InstitutionalStatement:
     oneOf:
-      - $ref: '#/definitions/RegulativeInstitutionalStatement'
-      - $ref: '#/definitions/ConstitutiveInstitutionalStatement'
-      - $ref: '#/definitions/InstitutionalStatementCombination'
+      - $ref: '#/$defs/RegulativeInstitutionalStatement'
+      - $ref: '#/$defs/ConstitutiveInstitutionalStatement'
+      - $ref: '#/$defs/InstitutionalStatementCombination'
 
   RegulativeInstitutionalStatement:
     allOf:
-      - $ref: '#/definitions/AbstractInstitutionalStatement'
+      - $ref: '#/$defs/AbstractInstitutionalStatement'
     properties:
-      attribute: { $ref: '#/definitions/StatementOrNodeWithProperties' }
-      directObject: { $ref: '#/definitions/StatementOrNodeWithProperties' }
-      indirectObject: { $ref: '#/definitions/StatementOrNodeWithProperties' }
-      deontic: { $ref: '#/definitions/Node' }
-      aim: { $ref: '#/definitions/Node' }
-      activationCondition: { $ref: '#/definitions/ConditionOrConstraint' }
-      executionConstraint: { $ref: '#/definitions/ConditionOrConstraint' }
+      attribute: { $ref: '#/$defs/ComponentWithProperties' }
+      directObject: { $ref: '#/$defs/ComponentWithProperties' }
+      indirectObject: { $ref: '#/$defs/ComponentWithProperties' }
+      deontic: { $ref: '#/$defs/ComponentWithoutProperties' }
+      aim: { $ref: '#/$defs/ComponentWithoutProperties' }
+      activationCondition: { $ref: '#/$defs/ComponentWithoutProperties' }
+      executionConstraint: { $ref: '#/$defs/ComponentWithoutProperties' }
     required:
       - attribute
       - aim
@@ -69,14 +73,14 @@ definitions:
 
   ConstitutiveInstitutionalStatement:
     allOf:
-      - $ref: '#/definitions/AbstractInstitutionalStatement'
+      - $ref: '#/$defs/AbstractInstitutionalStatement'
     properties:
-      constitutedEntity: { $ref: '#/definitions/StatementOrNodeWithProperties' }
-      deontic: { $ref: '#/definitions/Node' }
-      constitutiveFunction: { $ref: '#/definitions/Node' }
-      constitutingProperties: { $ref: '#/definitions/StatementOrNodeWithProperties' }
-      activationCondition: { $ref: '#/definitions/ConditionOrConstraint' }
-      executionConstraint: { $ref: '#/definitions/ConditionOrConstraint' }
+      constitutedEntity: { $ref: '#/$defs/ComponentWithProperties' }
+      deontic: { $ref: '#/$defs/ComponentWithoutProperties' }
+      constitutiveFunction: { $ref: '#/$defs/ComponentWithoutProperties' }
+      constitutingProperties: { $ref: '#/$defs/ComponentWithProperties' }
+      activationCondition: { $ref: '#/$defs/ComponentWithoutProperties' }
+      executionConstraint: { $ref: '#/$defs/ComponentWithoutProperties' }
     required:
       - constitutedEntity
       - constitutiveFunction
@@ -85,56 +89,82 @@ definitions:
   # Logical combination of statements
   InstitutionalStatementCombination:
     allOf:
-      - $ref: '#/definitions/AbstractInstitutionalStatement'
+      - $ref: '#/$defs/AbstractInstitutionalStatement'
     properties:
-      logicalOperator: { $ref: '#/definitions/LogicalOperator' }
+      logicalOperator: { $ref: '#/$defs/LogicalOperator' }
       statements:
         type: array
-        items: { $ref: '#/definitions/InstitutionalStatement' }
+        items: { $ref: '#/$defs/InstitutionalStatement' }
         minItems: 2
     additionalProperties: false
-
-  # TODO: Confirm that only one Cac / Cex is possible within a statement
-  # Type for both activation conditions and execution constraints
-  ConditionOrConstraint:
+    required:
+      - logicalOperator
+      - statements
+      
+  # Represents statement components that cannot have properties
+  ComponentWithoutProperties:
     type: object
+    additionalProperties: false
     oneOf:
-#      - type: array
-#        items: { $ref: '#/definitions/Node' }
-#        minLength: 1
-      - $ref: '#/definitions/InstitutionalStatement'
-      - $ref: '#/definitions/Node'
+      - $ref: '#/$defs/Node' # plain node
+      - $ref: '#/$defs/InstitutionalStatement' # nested statement
+      - properties: # logical combination
+          logicalOperator: { $ref: '#/$defs/LogicalOperator' }
+          components:
+            type: array
+            items: { $ref: '#/$defs/ComponentWithoutProperties' }
+            minItems: 2
+        required:
+          - logicalOperator
+          - components
 
-
-  # TODO: it doesn't capture AND/OR/XOR horizontal nesting
-  # see: page 22 of spec, () Statement
-
-  # Can be either a nested statement or a node with attached properties. Represents:
+  # Represents:
   #   - Attribute
   #   - Object
   #   - ConstitutedEntity
   #   - Property
-  StatementOrNodeWithProperties:
+  # Can be a:
+  #   - simple node
+  #   - node with properties
+  #   - nested institutional statement
+  #   - logical combination of the above
+  ComponentWithProperties:
     type: object
     additionalProperties: false
     oneOf:
-      - $ref: '#/definitions/InstitutionalStatement'
-      # TODO: property 'value' has itself property 'value', that is rather ugly
-      - properties:
-          element: { $ref: '#/definitions/Node' }
+      - $ref: '#/$defs/Node' # plain node
+      - $ref: '#/$defs/InstitutionalStatement' # nested statement
+      - $ref: '#/$defs/ComponentWithPropertiesCombination' # logical combination
+      - properties: # node with loosely-attached properties
+          element: { $ref: '#/$defs/Node' }
           properties:
             type: array
-            items: { $ref: '#/definitions/StatementOrNodeWithProperties' }
+            items: { $ref: '#/$defs/ComponentWithProperties' }
         required:
           - element
-        
-  
+          - properties # if properties are not defined, just use a plain node
+                
+  # A logical combination of components with properties
+  ComponentWithPropertiesCombination:
+    type: object
+    additionalProperties: false
+    properties: 
+      logicalOperator: { $ref: '#/$defs/LogicalOperator' }
+      components:
+        type: array
+        items: { $ref: '#/$defs/ComponentWithProperties' }
+        minItems: 2
+    required:
+      - logicalOperator
+      - components
 
+
+# TODO: add metadata fields? Dublin Core maybe?
 # Root element
 type: object
 properties:
   content: { type: string }
   statements:
     type: array
-    items: { $ref: '#/definitions/InstitutionalStatement' }
+    items: { $ref: '#/$defs/InstitutionalStatement' }
 additionalProperties: false
