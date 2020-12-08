@@ -1,9 +1,11 @@
-title: Institutional Grammar 2.0 JSON Schema
+title: Institutional Grammar 2.0 JSON Schema, strict variant
 description: >
   IG 2.0 schema (https://arxiv.org/abs/2008.08937) designed by students from the Faculty of
   Mathematics and Information Science of the Warsaw University of Technology.
+  
   This schema is still a prototype and subject to unannounced change.
-$schema: http://www.example.org/IG
+$id: http://www.example.org/ig-strict
+$schema: http://json-schema.org/draft-06/schema#
 $defs:
   # A logical operator with N operands
   LogicalOperator:
@@ -13,52 +15,74 @@ $defs:
       - OR
       - XOR
 
-  # An abstract node in the IG tree        
-  Node:
+  # An abstract span of text.
+  # The "begin" property is relative to text in the root of the document.
+  TextSpan:
     type: object
     properties:
-      value: { type: string }
+      text: { type: string }
       begin: { type: integer }
       length: { type: integer }
-
     # These are required for files exchanged between tools
-    # For user display, some of these properties may be omitted
+    # For user display, begin and length may be omitted
     required:
-      - value
+      - text
       - begin
       - length
 
-  # Abstract type entailing:
-  #  - RegulativeInstitutionalStatement
-  #  - ConstitutiveInstitutionalStatement
-  #  - InstitutionalStatementCombination
-  AbstractInstitutionalStatement:
+  # A simple text node in the tree
+  SimpleNode:
+    allOf: 
+      - $ref: '#/$defs/TextSpan'
+    additionalProperties: false
+    properties:
+      text: true
+      begin: true
+      length: true
+
+  # Abstract base type for:
+  #  - RegulativeStatement
+  #  - ConstitutiveStatement
+  #  - StatementCombination
+  AbstractStatement:
     type: object
     allOf:
-      - $ref: '#/$defs/Node'
+      - $ref: '#/$defs/TextSpan'
     properties:
       type:
+        # This is required for Regulative- and ConstitutiveStatements
         type: string
         enum:
           - institutionalStatement
           - statementOfFact
-      inversion: { type: boolean }
-      orElse: { $ref: '#/$defs/InstitutionalStatement' }
-    required:
-      - type
-      - inversion
+      inversion:
+        type: boolean
+        default: false
+      orElse: { $ref: '#/$defs/Statement' }
 
-  # Any type of institutional statement
-  InstitutionalStatement:
+  # Any type of statement
+  Statement:
     oneOf:
-      - $ref: '#/$defs/RegulativeInstitutionalStatement'
-      - $ref: '#/$defs/ConstitutiveInstitutionalStatement'
-      - $ref: '#/$defs/InstitutionalStatementCombination'
+      - $ref: '#/$defs/RegulativeStatement'
+      - $ref: '#/$defs/ConstitutiveStatement'
+      - $ref: '#/$defs/StatementCombination'
 
-  RegulativeInstitutionalStatement:
+  # Either a regulative institutional statement or statement of fact
+  RegulativeStatement:
+    additionalProperties: false
     allOf:
-      - $ref: '#/$defs/AbstractInstitutionalStatement'
+      - $ref: '#/$defs/AbstractStatement'
     properties:
+      # We have to indicate that inherited properties are allowed, see
+      # https://stackoverflow.com/a/58798563
+      # Inherited from AbstractStatement
+      type: true
+      inversion: true
+      orElse: true
+      # Inherited from TextSpan
+      text: true
+      begin: true
+      length: true
       attribute: { $ref: '#/$defs/ComponentWithProperties' }
       directObject: { $ref: '#/$defs/ComponentWithProperties' }
       indirectObject: { $ref: '#/$defs/ComponentWithProperties' }
@@ -67,14 +91,24 @@ $defs:
       activationCondition: { $ref: '#/$defs/ComponentWithoutProperties' }
       executionConstraint: { $ref: '#/$defs/ComponentWithoutProperties' }
     required:
+      - type
       - attribute
       - aim
-    additionalProperties: false
 
-  ConstitutiveInstitutionalStatement:
+  # Either a constitutive institutional statement or statement of fact
+  ConstitutiveStatement:
+    additionalProperties: false
     allOf:
-      - $ref: '#/$defs/AbstractInstitutionalStatement'
+      - $ref: '#/$defs/AbstractStatement'
     properties:
+      # Inherited from AbstractStatement
+      type: true
+      inversion: true
+      orElse: true
+      # Inherited from TextSpan
+      text: true
+      begin: true
+      length: true
       constitutedEntity: { $ref: '#/$defs/ComponentWithProperties' }
       deontic: { $ref: '#/$defs/ComponentWithoutProperties' }
       constitutiveFunction: { $ref: '#/$defs/ComponentWithoutProperties' }
@@ -82,33 +116,41 @@ $defs:
       activationCondition: { $ref: '#/$defs/ComponentWithoutProperties' }
       executionConstraint: { $ref: '#/$defs/ComponentWithoutProperties' }
     required:
+      - type
       - constitutedEntity
       - constitutiveFunction
-    additionalProperties: false
   
   # Logical combination of statements
-  InstitutionalStatementCombination:
+  StatementCombination:
+    additionalProperties: false
     allOf:
-      - $ref: '#/$defs/AbstractInstitutionalStatement'
+      - $ref: '#/$defs/AbstractStatement'
     properties:
+      # Inherited from AbstractStatement
+      type: true
+      inversion: true
+      orElse: true
+      # Inherited from TextSpan
+      text: true
+      begin: true
+      length: true
       logicalOperator: { $ref: '#/$defs/LogicalOperator' }
       statements:
         type: array
-        items: { $ref: '#/$defs/InstitutionalStatement' }
+        items: { $ref: '#/$defs/Statement' }
         minItems: 2
-    additionalProperties: false
     required:
       - logicalOperator
       - statements
       
   # Represents statement components that cannot have properties
   ComponentWithoutProperties:
-    type: object
-    additionalProperties: false
     oneOf:
-      - $ref: '#/$defs/Node' # plain node
-      - $ref: '#/$defs/InstitutionalStatement' # nested statement
-      - properties: # logical combination
+      - $ref: '#/$defs/SimpleNode' # simple node
+      - $ref: '#/$defs/Statement' # nested statement
+      - type: object # logical combination
+        additionalProperties: false
+        properties:
           logicalOperator: { $ref: '#/$defs/LogicalOperator' }
           components:
             type: array
@@ -118,37 +160,33 @@ $defs:
           - logicalOperator
           - components
 
-  # Represents:
-  #   - Attribute
-  #   - Object
-  #   - ConstitutedEntity
-  #   - Property
+  # Represents statement components that can have properties
   # Can be a:
   #   - simple node
   #   - node with properties
   #   - nested institutional statement
   #   - logical combination of the above
   ComponentWithProperties:
-    type: object
-    additionalProperties: false
     oneOf:
-      - $ref: '#/$defs/Node' # plain node
-      - $ref: '#/$defs/InstitutionalStatement' # nested statement
+      - $ref: '#/$defs/SimpleNode' # simple node
+      - $ref: '#/$defs/Statement' # nested statement
       - $ref: '#/$defs/ComponentWithPropertiesCombination' # logical combination
-      - properties: # node with loosely-attached properties
-          element: { $ref: '#/$defs/Node' }
+      - type: object # node with loosely-attached properties
+        additionalProperties: false
+        properties:
+          element: { $ref: '#/$defs/SimpleNode' }
           properties:
             type: array
             items: { $ref: '#/$defs/ComponentWithProperties' }
         required:
           - element
           - properties # if properties are not defined, just use a plain node
-                
+
   # A logical combination of components with properties
   ComponentWithPropertiesCombination:
     type: object
     additionalProperties: false
-    properties: 
+    properties:
       logicalOperator: { $ref: '#/$defs/LogicalOperator' }
       components:
         type: array
@@ -163,8 +201,8 @@ $defs:
 # Root element
 type: object
 properties:
-  content: { type: string }
+  text: { type: string }
   statements:
     type: array
-    items: { $ref: '#/$defs/InstitutionalStatement' }
+    items: { $ref: '#/$defs/Statement' }
 additionalProperties: false

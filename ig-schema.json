@@ -1,7 +1,8 @@
 {
-  "title": "Institutional Grammar 2.0 JSON Schema",
-  "description": "IG 2.0 schema (https://arxiv.org/abs/2008.08937) designed by students from the Faculty of Mathematics and Information Science of the Warsaw University of Technology. This schema is still a prototype and subject to unannounced change.\n",
-  "$schema": "http://www.example.org/IG",
+  "title": "Institutional Grammar 2.0 JSON Schema, strict variant",
+  "description": "IG 2.0 schema (https://arxiv.org/abs/2008.08937) designed by students from the Faculty of Mathematics and Information Science of the Warsaw University of Technology.\nThis schema is still a prototype and subject to unannounced change.\n",
+  "$id": "http://www.example.org/ig-strict",
+  "$schema": "http://json-schema.org/draft-06/schema#",
   "$defs": {
     "LogicalOperator": {
       "type": "string",
@@ -11,10 +12,10 @@
         "XOR"
       ]
     },
-    "Node": {
+    "TextSpan": {
       "type": "object",
       "properties": {
-        "value": {
+        "text": {
           "type": "string"
         },
         "begin": {
@@ -25,16 +26,29 @@
         }
       },
       "required": [
-        "value",
+        "text",
         "begin",
         "length"
       ]
     },
-    "AbstractInstitutionalStatement": {
+    "SimpleNode": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/TextSpan"
+        }
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "text": true,
+        "begin": true,
+        "length": true
+      }
+    },
+    "AbstractStatement": {
       "type": "object",
       "allOf": [
         {
-          "$ref": "#/$defs/Node"
+          "$ref": "#/$defs/TextSpan"
         }
       ],
       "properties": {
@@ -46,37 +60,41 @@
           ]
         },
         "inversion": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "orElse": {
-          "$ref": "#/$defs/InstitutionalStatement"
+          "$ref": "#/$defs/Statement"
         }
-      },
-      "required": [
-        "type",
-        "inversion"
-      ]
+      }
     },
-    "InstitutionalStatement": {
+    "Statement": {
       "oneOf": [
         {
-          "$ref": "#/$defs/RegulativeInstitutionalStatement"
+          "$ref": "#/$defs/RegulativeStatement"
         },
         {
-          "$ref": "#/$defs/ConstitutiveInstitutionalStatement"
+          "$ref": "#/$defs/ConstitutiveStatement"
         },
         {
-          "$ref": "#/$defs/InstitutionalStatementCombination"
+          "$ref": "#/$defs/StatementCombination"
         }
       ]
     },
-    "RegulativeInstitutionalStatement": {
+    "RegulativeStatement": {
+      "additionalProperties": false,
       "allOf": [
         {
-          "$ref": "#/$defs/AbstractInstitutionalStatement"
+          "$ref": "#/$defs/AbstractStatement"
         }
       ],
       "properties": {
+        "type": true,
+        "inversion": true,
+        "orElse": true,
+        "text": true,
+        "begin": true,
+        "length": true,
         "attribute": {
           "$ref": "#/$defs/ComponentWithProperties"
         },
@@ -100,18 +118,25 @@
         }
       },
       "required": [
+        "type",
         "attribute",
         "aim"
-      ],
-      "additionalProperties": false
+      ]
     },
-    "ConstitutiveInstitutionalStatement": {
+    "ConstitutiveStatement": {
+      "additionalProperties": false,
       "allOf": [
         {
-          "$ref": "#/$defs/AbstractInstitutionalStatement"
+          "$ref": "#/$defs/AbstractStatement"
         }
       ],
       "properties": {
+        "type": true,
+        "inversion": true,
+        "orElse": true,
+        "text": true,
+        "begin": true,
+        "length": true,
         "constitutedEntity": {
           "$ref": "#/$defs/ComponentWithProperties"
         },
@@ -132,46 +157,52 @@
         }
       },
       "required": [
+        "type",
         "constitutedEntity",
         "constitutiveFunction"
-      ],
-      "additionalProperties": false
+      ]
     },
-    "InstitutionalStatementCombination": {
+    "StatementCombination": {
+      "additionalProperties": false,
       "allOf": [
         {
-          "$ref": "#/$defs/AbstractInstitutionalStatement"
+          "$ref": "#/$defs/AbstractStatement"
         }
       ],
       "properties": {
+        "type": true,
+        "inversion": true,
+        "orElse": true,
+        "text": true,
+        "begin": true,
+        "length": true,
         "logicalOperator": {
           "$ref": "#/$defs/LogicalOperator"
         },
         "statements": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/InstitutionalStatement"
+            "$ref": "#/$defs/Statement"
           },
           "minItems": 2
         }
       },
-      "additionalProperties": false,
       "required": [
         "logicalOperator",
         "statements"
       ]
     },
     "ComponentWithoutProperties": {
-      "type": "object",
-      "additionalProperties": false,
       "oneOf": [
         {
-          "$ref": "#/$defs/Node"
+          "$ref": "#/$defs/SimpleNode"
         },
         {
-          "$ref": "#/$defs/InstitutionalStatement"
+          "$ref": "#/$defs/Statement"
         },
         {
+          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "logicalOperator": {
               "$ref": "#/$defs/LogicalOperator"
@@ -192,22 +223,22 @@
       ]
     },
     "ComponentWithProperties": {
-      "type": "object",
-      "additionalProperties": false,
       "oneOf": [
         {
-          "$ref": "#/$defs/Node"
+          "$ref": "#/$defs/SimpleNode"
         },
         {
-          "$ref": "#/$defs/InstitutionalStatement"
+          "$ref": "#/$defs/Statement"
         },
         {
           "$ref": "#/$defs/ComponentWithPropertiesCombination"
         },
         {
+          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "element": {
-              "$ref": "#/$defs/Node"
+              "$ref": "#/$defs/SimpleNode"
             },
             "properties": {
               "type": "array",
@@ -246,13 +277,13 @@
   },
   "type": "object",
   "properties": {
-    "content": {
+    "text": {
       "type": "string"
     },
     "statements": {
       "type": "array",
       "items": {
-        "$ref": "#/$defs/InstitutionalStatement"
+        "$ref": "#/$defs/Statement"
       }
     }
   },

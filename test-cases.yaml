@@ -2,95 +2,58 @@
 
 ---
 # Document with just text, no nodes
-content: Test content.
-
----
-content: test testAim
-statements:
-  - type: institutionalStatement
-    inversion: false
-    value: test testAim
-    begin: 0
-    length: 12
-    attribute:
-      element:
-        value: test
-        begin: 0
-        length: 4
-      properties:
-        - value: abc
-          begin: 1
-          length: 123
-    aim:
-      value: testAim
-      begin: 5
-      length: 7
-    
-    directObject:
-      type: statementOfFact
-      inversion: true
-      value: some substatement
-      begin: 123
-      length: 10
-      attribute:
-        value: test
-        begin: 0
-        length: 4
-      aim:
-        value: testAim
-        begin: 5
-        length: 7
+text: Test text.
         
 ---
-content: >
+text: >
   The State requires employers to provide notification to employees of the availability of 
   unemployment compensation at the time of separation from employment.
 statements:
   - type: institutionalStatement
     inversion: false
-    value: >
+    text: >
       The State requires employers to provide notification to employees of the availability of 
       unemployment compensation at the time of separation from employment.
     begin: 0
     length: 156
     attribute:
-      value: The State
+      text: The State
       begin: 0
       length: 9
     aim:
-      value: requires
+      text: requires
       begin: 10
       length: 8
     directObject:
       type: institutionalStatement
-      inversion: false
-      value: >
+      # this time we omit the inversion field
+      text: >
         employers to provide notification to employees of the availability of 
         unemployment compensation at the time of separation from employment.
       begin: 19
       length: 137
       attribute: 
-        value: employers
+        text: employers
         begin: 19
         length: 9
       aim:
-        value: to provide
+        text: to provide
         begin: 29
         length: 10
       directObject: 
         element: 
-          value: notification
+          text: notification
           begin: 40
           length: 12
         properties:
-          - value: of the availability of unemployment compensation
+          - text: of the availability of unemployment compensation
             begin: 66
             length: 48
       indirectObject:  
-        value: to employees
+        text: to employees
         begin: 53
         length: 12
       activationCondition:
-        value: at the time of separation from employment.
+        text: at the time of separation from employment.
         begin: 115
         length: 41
