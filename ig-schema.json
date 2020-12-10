@@ -1,0 +1,331 @@
+{
+  "title": "Institutional Grammar 2.0 JSON Schema",
+  "description": "IG 2.0 schema (https://arxiv.org/abs/2008.08937) designed by students from the Faculty of Mathematics and Information Science of the Warsaw University of Technology.\nThis schema is still a prototype and subject to unannounced change.\n",
+  "$id": "http://example.org/ig-schema/0.0.1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$defs": {
+    "LogicalOperator": {
+      "type": "string",
+      "enum": [
+        "AND",
+        "OR",
+        "XOR"
+      ]
+    },
+    "TextSpan": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "begin": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "text"
+      ]
+    },
+    "SimpleNode": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/TextSpan"
+            }
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "text": true,
+            "begin": true,
+            "length": true
+          }
+        }
+      ]
+    },
+    "AbstractStatement": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/TextSpan"
+        }
+      ],
+      "properties": {
+        "inversion": {
+          "type": "boolean",
+          "default": false
+        },
+        "orElse": {
+          "$ref": "#/$defs/Statement"
+        }
+      }
+    },
+    "AbstractAtomicStatement": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/AbstractStatement"
+        }
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "institutionalStatement",
+            "statementOfFact"
+          ]
+        },
+        "deontic": {
+          "$ref": "#/$defs/ComponentWithoutProperties"
+        },
+        "activationCondition": {
+          "$ref": "#/$defs/ComponentWithoutProperties"
+        },
+        "executionConstraint": {
+          "$ref": "#/$defs/ComponentWithoutProperties"
+        }
+      },
+      "if": {
+        "properties": {
+          "type": {
+            "const": "statementOfFact"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "deontic": false,
+          "orElse": false
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "Statement": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/RegulativeStatement"
+        },
+        {
+          "$ref": "#/$defs/ConstitutiveStatement"
+        },
+        {
+          "$ref": "#/$defs/StatementCombination"
+        }
+      ]
+    },
+    "RegulativeStatement": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/AbstractAtomicStatement"
+        }
+      ],
+      "properties": {
+        "text": true,
+        "begin": true,
+        "length": true,
+        "inversion": true,
+        "orElse": true,
+        "type": true,
+        "deontic": true,
+        "activationCondition": true,
+        "executionConstraint": true,
+        "attribute": {
+          "$ref": "#/$defs/ComponentWithProperties"
+        },
+        "directObject": {
+          "$ref": "#/$defs/StatementOrComponentWithProperties"
+        },
+        "indirectObject": {
+          "$ref": "#/$defs/StatementOrComponentWithProperties"
+        },
+        "aim": {
+          "$ref": "#/$defs/ComponentWithoutProperties"
+        }
+      },
+      "required": [
+        "attribute",
+        "aim"
+      ]
+    },
+    "ConstitutiveStatement": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/AbstractAtomicStatement"
+        }
+      ],
+      "properties": {
+        "text": true,
+        "begin": true,
+        "length": true,
+        "inversion": true,
+        "orElse": true,
+        "type": true,
+        "deontic": true,
+        "activationCondition": true,
+        "executionConstraint": true,
+        "constitutedEntity": {
+          "$ref": "#/$defs/ComponentWithProperties"
+        },
+        "constitutiveFunction": {
+          "$ref": "#/$defs/ComponentWithoutProperties"
+        },
+        "constitutingProperty": {
+          "$ref": "#/$defs/ComponentWithProperties"
+        }
+      },
+      "required": [
+        "constitutedEntity",
+        "constitutiveFunction"
+      ]
+    },
+    "StatementCombination": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/AbstractStatement"
+        }
+      ],
+      "properties": {
+        "inversion": true,
+        "orElse": true,
+        "text": true,
+        "begin": true,
+        "length": true,
+        "logicalOperator": {
+          "$ref": "#/$defs/LogicalOperator"
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Statement"
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "logicalOperator",
+        "statements"
+      ]
+    },
+    "ComponentWithoutProperties": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SimpleNode"
+        },
+        {
+          "$ref": "#/$defs/Statement"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "logicalOperator": {
+              "$ref": "#/$defs/LogicalOperator"
+            },
+            "components": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ComponentWithoutProperties"
+              },
+              "minItems": 2
+            }
+          },
+          "required": [
+            "logicalOperator",
+            "components"
+          ]
+        }
+      ]
+    },
+    "StatementOrComponentWithProperties": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ComponentWithProperties"
+        },
+        {
+          "$ref": "#/$defs/Statement"
+        }
+      ]
+    },
+    "ComponentWithProperties": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SimpleNode"
+        },
+        {
+          "$ref": "#/$defs/ComponentWithPropertiesCombination"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "element": {
+              "$ref": "#/$defs/SimpleNode"
+            },
+            "properties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/StatementOrComponentWithProperties"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "element",
+            "properties"
+          ]
+        }
+      ]
+    },
+    "ComponentWithPropertiesCombination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logicalOperator": {
+          "$ref": "#/$defs/LogicalOperator"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ComponentWithProperties"
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "logicalOperator",
+        "components"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "strict",
+        "permissive"
+      ],
+      "default": "strict"
+    },
+    "text": {
+      "type": "string"
+    },
+    "statements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Statement"
+      }
+    }
+  },
+  "additionalProperties": false
+}
