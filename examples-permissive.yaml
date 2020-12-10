@@ -109,3 +109,90 @@ statements:
           - of the availability of unemployment compensation
       indirectObject: to employees
       activationCondition: at the time of separation from employment.
+
+---
+text: Citizen must submit a tax return form annually. The State reviews tax return forms.
+statements:
+  - type: institutionalStatement
+    text: Citizen must submit a tax return form annually.
+    attribute: Citizen
+    deontic: must
+    aim: submit
+    directObject: a tax return form
+    executionConstraint: annually.
+
+  - type: institutionalStatement
+    text: The State reviews tax return forms.
+    attribute: The State
+    aim: reviews
+    directObject: tax return forms.
+
+---
+text: A certified farmer whose certification is suspended may submit a recertification request.
+statements:
+- type: institutionalStatement
+  text: A certified farmer whose certification is suspended may submit a recertification request.
+  attribute:
+    element: farmer
+    properties:
+      - certified
+      - type: institutionalStatement
+        text: whose certification is suspended by the Secretary
+        aim: is suspended
+        attribute: the Secretary
+        directObject: certification
+  deontic: may
+  aim: submit
+  directObject:
+    element: request
+    properties:
+      - recertification
+
+---
+text: >
+  Program managers who believe that an operation has violated the Act
+  may pursue revocation proceedings.
+statements:
+  - type: institutionalStatement
+    text: >
+      Program managers who believe that an operation has violated the Act
+      may pursue revocation proceedings.
+    attribute:
+      element: Program managers
+      properties:
+        - element: who believe
+          properties:
+            - type: statementOfFact
+              attribute: a certified operation
+              aim: has violated
+              directObject: the Act
+    deontic: may
+    aim: pursue
+    directObject: revocation proceedings
+
+---
+text: Operators and Certifiers must comply with regulations and best practices.
+statements:
+  - type: institutionalStatement
+    attribute:
+      logicalOperator: AND
+      components:
+        - Operators
+        - Certifiers
+    deontic: must
+    aim: comply
+    directObject:
+      logicalOperator: AND
+      components:
+        - regulations
+        - best practices
+
+---
+text: The Council may have an advisory committee.
+statements:
+  - type: institutionalStatement
+    constitutedEntity: The Council
+    deontic: may
+    constitutiveFunction: have
+    constitutingProperty: an advisory committee
+

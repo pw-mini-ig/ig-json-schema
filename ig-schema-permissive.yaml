@@ -7,6 +7,8 @@ description: >
   This schema is still a prototype and subject to unannounced change.
 $id: http://www.example.org/ig-permissive
 $schema: http://json-schema.org/draft-06/schema#
+
+# TODO: Add fields for comments
 $defs:
   # A logical operator with N operands
   LogicalOperator:
@@ -51,6 +53,8 @@ $defs:
     properties:
       type:
         # This is required for Regulative- and ConstitutiveStatements
+        # TODO: Conditionally disallow some fields in statements when this is
+        #       set to statementOfFact.
         type: string
         enum:
           - institutionalStatement
@@ -112,7 +116,7 @@ $defs:
       constitutedEntity: { $ref: '#/$defs/ComponentWithProperties' }
       deontic: { $ref: '#/$defs/ComponentWithoutProperties' }
       constitutiveFunction: { $ref: '#/$defs/ComponentWithoutProperties' }
-      constitutingProperties: { $ref: '#/$defs/ComponentWithProperties' }
+      constitutingProperty: { $ref: '#/$defs/ComponentWithProperties' }
       activationCondition: { $ref: '#/$defs/ComponentWithoutProperties' }
       executionConstraint: { $ref: '#/$defs/ComponentWithoutProperties' }
     required:
@@ -127,7 +131,6 @@ $defs:
       - $ref: '#/$defs/AbstractStatement'
     properties:
       # Inherited from AbstractStatement
-      type: true
       inversion: true
       orElse: true
       # Inherited from TextSpan
@@ -166,6 +169,11 @@ $defs:
   #   - node with properties
   #   - nested institutional statement
   #   - logical combination of the above
+  # TODO: this allows for a nesting pattern like:
+  #       (component) > properties > - statement
+  #       but NOT:
+  #       (component) > element > statement
+  #       figure out what should be valid here.
   ComponentWithProperties:
     oneOf:
       - $ref: '#/$defs/SimpleNode' # simple node

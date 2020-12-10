@@ -112,7 +112,7 @@ $defs:
       constitutedEntity: { $ref: '#/$defs/ComponentWithProperties' }
       deontic: { $ref: '#/$defs/ComponentWithoutProperties' }
       constitutiveFunction: { $ref: '#/$defs/ComponentWithoutProperties' }
-      constitutingProperties: { $ref: '#/$defs/ComponentWithProperties' }
+      constitutingProperty: { $ref: '#/$defs/ComponentWithProperties' }
       activationCondition: { $ref: '#/$defs/ComponentWithoutProperties' }
       executionConstraint: { $ref: '#/$defs/ComponentWithoutProperties' }
     required:
@@ -127,7 +127,6 @@ $defs:
       - $ref: '#/$defs/AbstractStatement'
     properties:
       # Inherited from AbstractStatement
-      type: true
       inversion: true
       orElse: true
       # Inherited from TextSpan
