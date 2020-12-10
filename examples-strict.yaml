@@ -1,16 +1,9 @@
-# Empty document
-
----
-# Document with just text, no nodes
-text: Test text.
-        
----
+mode: strict
 text: >
   The State requires employers to provide notification to employees of the availability of 
   unemployment compensation at the time of separation from employment.
 statements:
   - type: institutionalStatement
-    inversion: false
     text: >
       The State requires employers to provide notification to employees of the availability of 
       unemployment compensation at the time of separation from employment.
@@ -26,7 +19,6 @@ statements:
       length: 8
     directObject:
       type: institutionalStatement
-      # this time we omit the inversion field
       text: >
         employers to provide notification to employees of the availability of 
         unemployment compensation at the time of separation from employment.

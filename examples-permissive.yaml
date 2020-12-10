@@ -1,57 +1,3 @@
-# No simplification
-text: >
-  The State requires employers to provide notification to employees of the availability of 
-  unemployment compensation at the time of separation from employment.
-statements:
-  - type: institutionalStatement
-    text: >
-      The State requires employers to provide notification to employees of the availability of 
-      unemployment compensation at the time of separation from employment.
-    begin: 0
-    length: 156
-    attribute:
-      text: The State
-      begin: 0
-      length: 9
-    aim:
-      text: requires
-      begin: 10
-      length: 8
-    directObject:
-      type: institutionalStatement
-      text: >
-        employers to provide notification to employees of the availability of 
-        unemployment compensation at the time of separation from employment.
-      begin: 19
-      length: 137
-      attribute:
-        text: employers
-        begin: 19
-        length: 9
-      aim:
-        text: to provide
-        begin: 29
-        length: 10
-      directObject:
-        element:
-          text: notification
-          begin: 40
-          length: 12
-        properties:
-          - text: of the availability of unemployment compensation
-            begin: 66
-            length: 48
-      indirectObject:
-        text: to employees
-        begin: 53
-        length: 12
-      activationCondition:
-        text: at the time of separation from employment.
-        begin: 115
-        length: 41
-
----
-
 # Example statement with all "begin" and "length" properties removed
 text: >
   The State requires employers to provide notification to employees of the availability of 
@@ -108,7 +54,7 @@ statements:
         properties:
           - of the availability of unemployment compensation
       indirectObject: to employees
-      activationCondition: at the time of separation from employment.
+      activationCondition: at the time of separation from employment
 
 ---
 text: Citizen must submit a tax return form annually. The State reviews tax return forms.
@@ -125,7 +71,7 @@ statements:
     text: The State reviews tax return forms.
     attribute: The State
     aim: reviews
-    directObject: tax return forms.
+    directObject: tax return forms
 
 ---
 text: A certified farmer whose certification is suspended may submit a recertification request.
@@ -163,7 +109,8 @@ statements:
         - element: who believe
           properties:
             - type: statementOfFact
-              attribute: a certified operation
+              text: an operation has violated the Act
+              attribute: an operation
               aim: has violated
               directObject: the Act
     deontic: may
@@ -174,6 +121,7 @@ statements:
 text: Operators and Certifiers must comply with regulations and best practices.
 statements:
   - type: institutionalStatement
+    text: Operators and Certifiers must comply with regulations and best practices.
     attribute:
       logicalOperator: AND
       components:
@@ -191,6 +139,7 @@ statements:
 text: The Council may have an advisory committee.
 statements:
   - type: institutionalStatement
+    text: The Council may have an advisory committee.
     constitutedEntity: The Council
     deontic: may
     constitutiveFunction: have
