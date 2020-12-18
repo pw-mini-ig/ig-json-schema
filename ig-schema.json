@@ -1,7 +1,7 @@
 {
   "title": "Institutional Grammar 2.0 JSON Schema",
   "description": "IG 2.0 schema (https://arxiv.org/abs/2008.08937) designed by students from the Faculty of Mathematics and Information Science of the Warsaw University of Technology.\nThis schema is still a prototype and subject to unannounced change.\n",
-  "$id": "http://example.org/ig-schema/0.0.2",
+  "$id": "http://example.org/ig-schema/0.0.3",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$defs": {
     "LogicalOperator": {
@@ -84,10 +84,10 @@
           "$ref": "#/$defs/SimpleNode"
         },
         "activationCondition": {
-          "$ref": "#/$defs/ComponentWithoutProperties"
+          "$ref": "#/$defs/StatementOrComponentWithoutProperties"
         },
         "executionConstraint": {
-          "$ref": "#/$defs/ComponentWithoutProperties"
+          "$ref": "#/$defs/StatementOrComponentWithoutProperties"
         }
       },
       "if": {
@@ -216,13 +216,20 @@
         "statements"
       ]
     },
+    "StatementOrComponentWithoutProperties": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ComponentWithoutProperties"
+        },
+        {
+          "$ref": "#/$defs/Statement"
+        }
+      ]
+    },
     "ComponentWithoutProperties": {
       "oneOf": [
         {
           "$ref": "#/$defs/SimpleNode"
-        },
-        {
-          "$ref": "#/$defs/Statement"
         },
         {
           "type": "object",
