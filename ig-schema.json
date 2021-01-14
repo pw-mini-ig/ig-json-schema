@@ -1,7 +1,7 @@
 {
   "title": "Institutional Grammar 2.0 JSON Schema",
   "description": "IG 2.0 schema (https://arxiv.org/abs/2008.08937) designed by students from the Faculty of Mathematics and Information Science of the Warsaw University of Technology.\nThis schema is still a prototype and subject to unannounced change.\n",
-  "$id": "http://example.org/ig-schema/0.0.3",
+  "$id": "http://example.org/ig-schema/0.1.0",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$defs": {
     "LogicalOperator": {
@@ -219,11 +219,34 @@
     "StatementOrComponentWithoutProperties": {
       "oneOf": [
         {
-          "$ref": "#/$defs/ComponentWithoutProperties"
+          "$ref": "#/$defs/StatementOrComponentWithoutPropertiesCombination"
+        },
+        {
+          "$ref": "#/$defs/SimpleNode"
         },
         {
           "$ref": "#/$defs/Statement"
         }
+      ]
+    },
+    "StatementOrComponentWithoutPropertiesCombination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logicalOperator": {
+          "$ref": "#/$defs/LogicalOperator"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StatementOrComponentWithoutProperties"
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "logicalOperator",
+        "components"
       ]
     },
     "ComponentWithoutProperties": {
@@ -232,35 +255,64 @@
           "$ref": "#/$defs/SimpleNode"
         },
         {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "logicalOperator": {
-              "$ref": "#/$defs/LogicalOperator"
-            },
-            "components": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/ComponentWithoutProperties"
-              },
-              "minItems": 2
-            }
-          },
-          "required": [
-            "logicalOperator",
-            "components"
-          ]
+          "$ref": "#/$defs/ComponentWithoutPropertiesCombination"
         }
+      ]
+    },
+    "ComponentWithoutPropertiesCombination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logicalOperator": {
+          "$ref": "#/$defs/LogicalOperator"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ComponentWithoutProperties"
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "logicalOperator",
+        "components"
       ]
     },
     "StatementOrComponentWithProperties": {
       "oneOf": [
         {
-          "$ref": "#/$defs/ComponentWithProperties"
+          "$ref": "#/$defs/StatementOrComponentWithPropertiesCombination"
+        },
+        {
+          "$ref": "#/$defs/SimpleNode"
+        },
+        {
+          "$ref": "#/$defs/NodeWithProperties"
         },
         {
           "$ref": "#/$defs/Statement"
         }
+      ]
+    },
+    "StatementOrComponentWithPropertiesCombination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logicalOperator": {
+          "$ref": "#/$defs/LogicalOperator"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StatementOrComponentWithProperties"
+          },
+          "minItems": 2
+        }
+      },
+      "required": [
+        "logicalOperator",
+        "components"
       ]
     },
     "ComponentWithProperties": {
@@ -272,25 +324,28 @@
           "$ref": "#/$defs/ComponentWithPropertiesCombination"
         },
         {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "element": {
-              "$ref": "#/$defs/SimpleNode"
-            },
-            "properties": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/StatementOrComponentWithProperties"
-              },
-              "minItems": 1
-            }
-          },
-          "required": [
-            "element",
-            "properties"
-          ]
+          "$ref": "#/$defs/NodeWithProperties"
         }
+      ]
+    },
+    "NodeWithProperties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "element": {
+          "$ref": "#/$defs/SimpleNode"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StatementOrComponentWithProperties"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "element",
+        "properties"
       ]
     },
     "ComponentWithPropertiesCombination": {
