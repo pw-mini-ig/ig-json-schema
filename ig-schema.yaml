@@ -4,7 +4,7 @@ description: >
   of Mathematics and Information Science of the Warsaw University of Technology.
 
   This schema is still a prototype and subject to unannounced change.
-$id: http://example.org/ig-schema/0.0.3
+$id: http://example.org/ig-schema/0.1.0
 $schema: http://json-schema.org/draft-07/schema#
 
 $defs:
@@ -169,8 +169,23 @@ $defs:
   # or just a component without properties.
   StatementOrComponentWithoutProperties:
     oneOf:
-      - $ref: '#/$defs/ComponentWithoutProperties'
+      - $ref: '#/$defs/StatementOrComponentWithoutPropertiesCombination'
+      - $ref: '#/$defs/SimpleNode'
       - $ref: '#/$defs/Statement'
+
+  # Logical combination of statements or components without properties
+  StatementOrComponentWithoutPropertiesCombination:
+    type: object
+    additionalProperties: false
+    properties:
+      logicalOperator: { $ref: '#/$defs/LogicalOperator' }
+      components:
+        type: array
+        items: { $ref: '#/$defs/StatementOrComponentWithoutProperties' }
+        minItems: 2
+    required:
+      - logicalOperator
+      - components
 
   # Represents statement components that cannot have properties
   # Can be a:
@@ -180,24 +195,44 @@ $defs:
   ComponentWithoutProperties:
     oneOf:
       - $ref: '#/$defs/SimpleNode' # simple node
-      - type: object # logical combination
-        additionalProperties: false
-        properties:
-          logicalOperator: { $ref: '#/$defs/LogicalOperator' }
-          components:
-            type: array
-            items: { $ref: '#/$defs/ComponentWithoutProperties' }
-            minItems: 2
-        required:
-          - logicalOperator
-          - components
+      - $ref: '#/$defs/ComponentWithoutPropertiesCombination' # combination
+
+  # Logical combination of components without properties
+  ComponentWithoutPropertiesCombination:
+    type: object
+    additionalProperties: false
+    properties:
+      logicalOperator: { $ref: '#/$defs/LogicalOperator' }
+      components:
+        type: array
+        items: { $ref: '#/$defs/ComponentWithoutProperties' }
+        minItems: 2
+    required:
+      - logicalOperator
+      - components
 
   # Represents a component that can have properties and can also
   # be a nested statement.
   StatementOrComponentWithProperties:
     oneOf:
-      - $ref: '#/$defs/ComponentWithProperties'
+      - $ref: '#/$defs/StatementOrComponentWithPropertiesCombination'
+      - $ref: '#/$defs/SimpleNode'
+      - $ref: '#/$defs/NodeWithProperties'
       - $ref: '#/$defs/Statement'
+
+  # A logical combination of statements or components with properties
+  StatementOrComponentWithPropertiesCombination:
+    type: object
+    additionalProperties: false
+    properties:
+      logicalOperator: { $ref: '#/$defs/LogicalOperator' }
+      components:
+        type: array
+        items: { $ref: '#/$defs/StatementOrComponentWithProperties' }
+        minItems: 2
+    required:
+      - logicalOperator
+      - components
 
   # Represents statement components that can have properties
   # Can be a:
@@ -206,19 +241,23 @@ $defs:
   #   - logical combination of the above
   ComponentWithProperties:
     oneOf:
-      - $ref: '#/$defs/SimpleNode' # simple node
-      - $ref: '#/$defs/ComponentWithPropertiesCombination' # logical combination
-      - type: object # node with loosely-attached properties
-        additionalProperties: false
-        properties:
-          element: { $ref: '#/$defs/SimpleNode' }
-          properties:
-            type: array
-            items: { $ref: '#/$defs/StatementOrComponentWithProperties' }
-            minItems: 1
-        required:
-          - element
-          - properties # if there are no properties, just use a plain node
+      - $ref: '#/$defs/SimpleNode'
+      - $ref: '#/$defs/ComponentWithPropertiesCombination'
+      - $ref: '#/$defs/NodeWithProperties'
+
+  # Node with loosely-attached properties
+  NodeWithProperties:
+    type: object
+    additionalProperties: false
+    properties:
+      element: { $ref: '#/$defs/SimpleNode' }
+      properties:
+        type: array
+        items: { $ref: '#/$defs/StatementOrComponentWithProperties' }
+        minItems: 1
+    required:
+      - element
+      - properties # if there are no properties, just use a plain node
 
   # A logical combination of components with properties
   ComponentWithPropertiesCombination:

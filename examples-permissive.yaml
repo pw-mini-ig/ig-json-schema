@@ -118,17 +118,21 @@ statements:
     directObject: revocation proceedings
 
 ---
-text: Operators and Certifiers must comply with regulations and best practices.
+text: Operators and Certifiers must comply and agree with regulations and best practices.
 statements:
   - type: institutionalStatement
-    text: Operators and Certifiers must comply with regulations and best practices.
+    text: Operators and Certifiers must comply and agree with regulations and best practices.
     attribute:
       logicalOperator: AND
       components:
         - Operators
         - Certifiers
     deontic: must
-    aim: comply
+    aim:
+      logicalOperator: AND
+      components:
+        - comply
+        - agree
     directObject:
       logicalOperator: AND
       components:
